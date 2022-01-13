@@ -1,25 +1,27 @@
 <script setup lang="ts">
-import { logList } from "src/utils/rewriteConsole"
+import { logList } from "src/components/console/rewriteConsole"
 import { Button, Icon } from "vant"
 import { ref, Ref } from "vue"
 
 const logs: Ref<typeof logList> = ref([])
 
 function showLog() {
-  logs.value = logList
+  logs.value.push(...logList)
+  logList.length = 0
 }
 </script>
 
 <template>
   <p class="log-item" v-for="log in logs" :class="log.type">
     <Icon v-if="log.type == 'warn'" name="info" color="#f4bc2b" />
-    <Icon v-if="log.type == 'error'" name="clear" color="#ec132d" />{{
-      Object.entries(log.arguments)
-        .map((key) => {
-          if (["number", "boolean", "string"].includes(typeof key[1])) {
-            return key[1]
+    <Icon v-if="log.type == 'error'" name="clear" color="#ec132d" />
+    {{
+      log.args
+        .map((key:any) => {
+          if (["number", "boolean", "string"].includes(typeof key)) {
+            return key
           }
-          return JSON.stringify(key[1])
+          return JSON.stringify(key)
         })
         .join(" ")
     }}
@@ -32,7 +34,8 @@ function showLog() {
   margin: 0;
   line-height: 30px;
 }
-.log {
+.log,
+.debugs {
   border-bottom: 1px solid #f0f0f0;
 }
 .warn {

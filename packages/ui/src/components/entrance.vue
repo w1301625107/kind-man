@@ -37,7 +37,7 @@ import {
   CellGroup,
   NumberKeyboard,
 } from "vant"
-import Console from "./console.vue"
+import Console from "./console/console.vue"
 
 import { ref } from "vue"
 import { useConfig } from "src/use/config"
