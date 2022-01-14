@@ -19,6 +19,9 @@
         <Tab title="console">
           <Console></Console>
         </Tab>
+        <Tab title="Vue Devtool">
+          <VueDevtool></VueDevtool>
+        </Tab>
       </Tabs>
     </div>
   </Popup>
@@ -41,6 +44,7 @@ import Console from "./console/console.vue"
 
 import { ref } from "vue"
 import { useConfig } from "src/use/config"
+import VueDevtool from "./vueDevtool/index.vue"
 
 const configs = useConfig()
 const { entrance } = configs.value
