@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { logList } from "src/components/console/rewriteConsole"
+import { logList } from "src/components/console/overwrite"
 import { Button, Icon } from "vant"
 import { ref, Ref } from "vue"
 
