@@ -22,6 +22,9 @@
         <Tab title="Vue Devtool">
           <VueDevtool></VueDevtool>
         </Tab>
+        <Tab title="Wrine">
+          <Wrine></Wrine>
+        </Tab>
       </Tabs>
     </div>
   </Popup>
@@ -45,6 +48,7 @@ import Console from "./console/index.vue"
 import { ref } from "vue"
 import { useConfig } from "src/use/config"
 import VueDevtool from "./vueDevtool/index.vue"
+import Wrine from "./wrine/wrine.vue"
 
 const configs = useConfig()
 const { entrance } = configs.value
