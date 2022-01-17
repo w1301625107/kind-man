@@ -1,6 +1,6 @@
 // @ts-nocheck
 // https://github.com/avwo/whistle/blob/master/assets/js/log.js
-function whistleRemoteLogs(ip, host) {
+function whistleRemoteLogs(ip, host, id = "anonymous") {
   if (typeof window === "undefined" || typeof Image === "undefined") {
     return
   }
@@ -226,7 +226,7 @@ function whistleRemoteLogs(ip, host) {
       }
     }
     img.src =
-      `http://${ip}:${host}/.whistle-path.5b6af7b9884e1165/log.${host}/cgi-bin/log/set?id=&level=` +
+      `http://${ip}:${host}/.whistle-path.5b6af7b9884e1165/log.${host}/cgi-bin/log/set?id=${id}&level=` +
       level +
       "&text=" +
       logStr +

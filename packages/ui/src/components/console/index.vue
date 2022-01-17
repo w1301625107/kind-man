@@ -10,6 +10,7 @@ const { customConsole } = useConfig().value
 
 const host = toRef(customConsole, "host")
 const ip = toRef(customConsole, "ip")
+const identity = toRef(customConsole, "identity")
 
 const connect = () => {
   whistleRemoteLogs(ip.value, host.value)
@@ -59,6 +60,14 @@ function clearlog() {
       clearable
       label="HOST"
       placeholder="请输入HOST"
+    >
+    </Field>
+    <Field
+      v-model="identity"
+      center
+      clearable
+      label="Identity"
+      placeholder="请输入identity"
     >
       <template #button>
         <Button size="small" type="primary" @click="connect">链接</Button>

@@ -23,6 +23,7 @@ let DefaultConfig = {
   customConsole: {
     ip: "127.0.0.1",
     host: "8899",
+    identity: "anonymous",
   },
 }
 
