@@ -23,4 +23,4 @@ keys.forEach((type) => {
   })(console[type])
 })
 
-export { logList }
+export { logList, consoleKey }

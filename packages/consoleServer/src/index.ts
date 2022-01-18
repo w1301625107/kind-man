@@ -10,17 +10,13 @@ const port = 3001
 const simulateWhislteLogUrl = `/.whistle-path.5b6af7b9884e1165/log.${port}/cgi-bin/log/set`
 
 router.get(simulateWhislteLogUrl, async (ctx) => {
-  const reg = /(?<time>\d*)-(?<seq>\d*)/
   const query = ctx.query
-  const timeAndSeq = Object.keys(query).find((key) => {
-    return reg.test(key)
-  })
-  const { time, seq } = reg.exec(timeAndSeq).groups
-
   console.log(
-    `[${new Date(parseInt(time)).toLocaleString()}][seq:${seq}][id:${
-      query.id
-    }][${query.level}]${JSON.parse(query.text as string).join(" ")}`
+    `[${new Date(parseInt(query.add_date as string)).toLocaleString()}][seq:${
+      query.add_seq
+    }][id:${query.id}][${query.level}]${JSON.parse(query.text as string).join(
+      " "
+    )}`
   )
   ctx.body = "ctx.query"
   ctx.response.status = 200

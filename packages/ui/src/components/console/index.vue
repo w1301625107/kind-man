@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { logList } from "src/components/console/overwrite"
+import { consoleKey, logList } from "src/components/console/overwrite"
 import { useConfig } from "src/use/config"
 import { Button, Icon, CellGroup, NoticeBar, Field } from "vant"
 import { ref, Ref, toRef } from "vue"
@@ -11,6 +11,7 @@ const { customConsole } = useConfig().value
 const host = toRef(customConsole, "host")
 const ip = toRef(customConsole, "ip")
 const identity = toRef(customConsole, "identity")
+const isDebug = import.meta.env.DEV
 
 const connect = () => {
   whistleRemoteLogs(ip.value, host.value)
@@ -20,9 +21,11 @@ function showLog() {
   listedLogs.value.push(...logList)
   logList.length = 0
 }
-function addLog() {
-  console.log("🎆 add test log message", Math.random())
+
+function addLog(type: consoleKey = "log") {
+  console[type]("🎆 add test log message", Math.random())
 }
+
 function clearlog() {
   listedLogs.value.length = 0
 }
@@ -89,8 +92,13 @@ function clearlog() {
     }}
   </p>
   <Button @click="showLog">showLog</Button>
-  <Button @click="addLog">addLog</Button>
   <Button @click="clearlog">clearlog</Button>
+  <template v-if="isDebug">
+    <Button @click="addLog">addLog</Button>
+    <Button @click="addLog('warn')">addWarnLog</Button>
+    <Button @click="addLog('error')">addErrorLog</Button>
+    <Button @click="addLog('debug')">addDebugLog</Button>
+  </template>
 </template>
 
 <style scoped>

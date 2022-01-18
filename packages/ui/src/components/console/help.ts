@@ -225,15 +225,12 @@ function whistleRemoteLogs(ip, host, id = "anonymous") {
         logStr = logStr.substring(0, percIndex)
       }
     }
-    img.src =
-      `http://${ip}:${host}/.whistle-path.5b6af7b9884e1165/log.${host}/cgi-bin/log/set?id=${id}&level=` +
-      level +
-      "&text=" +
-      logStr +
-      "&" +
-      new Date().getTime() +
-      "-" +
-      ++index
+    const date = new Date().getTime()
+    const baseUrl = `http://${ip}:${host}/.whistle-path.5b6af7b9884e1165/log.${host}/cgi-bin/log/set`
+    const originData = `&id=${id}&level=${level}&text=${logStr}&${date}-${++index}`
+    const addtionData = `?add_date=${date}&add_seq=${index}`
+    img.src = `${baseUrl}${addtionData}${originData}`
+
     var preventGC = function () {
       img.onload = img.onerror = null
       clearTimeout(timer)
