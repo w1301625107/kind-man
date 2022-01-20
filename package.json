@@ -12,7 +12,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/cz-lerna-changelog"
+      "path": "./node_modules/cz-conventional-changelog"
     }
   },
   "lint-staged": {
@@ -24,7 +24,7 @@
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.0",
     "commitizen": "^4.2.4",
-    "cz-lerna-changelog": "^2.0.3",
+    "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.7.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-vue": "^8.3.0",

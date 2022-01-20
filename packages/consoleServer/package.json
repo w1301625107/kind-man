@@ -4,7 +4,7 @@
   "description": "> TODO: description",
   "author": "wuchouchou <w1301625107@gmail.com>",
   "homepage": "",
-  "license": "ISC",
+  "license": "MIT",
   "main": "lib/consoleServer.js",
   "directories": {
     "lib": "lib",
@@ -13,9 +13,6 @@
   "files": [
     "lib"
   ],
-  "publishConfig": {
-    "registry": "https://registry.npm.taobao.org/"
-  },
   "scripts": {
     "start": "tsc && node dist/index.js",
     "serve": "nodemon --watch src/**/* -e ts,tsx --exec ts-node ./src/index.ts"
