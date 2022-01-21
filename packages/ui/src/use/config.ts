@@ -7,8 +7,8 @@ let DefaultConfig = {
   entrance: {
     width: 100,
     height: 30,
-    top: 250,
-    left: 250,
+    right: 30,
+    bottom: 30,
     showTip: true,
   },
   vueDevtool: {
