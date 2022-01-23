@@ -9,18 +9,20 @@ const logList: Array<{
   args: any
 }> = []
 
-keys.forEach((type) => {
-  console[type] = (function (originConsoleFunc) {
-    return function (...args) {
-      logList.push({
-        type,
-        time: Date.now(),
-        args: args,
-      })
+function rewriteConsole() {
+  keys.forEach((type) => {
+    console[type] = (function (originConsoleFunc) {
+      return function (...args) {
+        logList.push({
+          type,
+          time: Date.now(),
+          args: args,
+        })
 
-      originConsoleFunc.call(console, ...arguments)
-    }
-  })(console[type])
-})
+        originConsoleFunc.call(console, ...arguments)
+      }
+    })(console[type])
+  })
+}
 
-export { logList, consoleKey }
+export { logList, consoleKey, rewriteConsole }

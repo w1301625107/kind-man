@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { consoleKey, logList } from "src/components/console/overwrite"
+import {
+  consoleKey,
+  logList,
+  rewriteConsole,
+} from "src/components/console/overwrite"
 import { useConfig } from "src/use/config"
-import { Button, Icon, CellGroup, NoticeBar, Field } from "vant"
-import { ref, Ref, toRef } from "vue"
+import { Button, Icon, CellGroup, NoticeBar, Field, Switch } from "vant"
+import { ref, Ref, toRefs } from "vue"
 import { whistleRemoteLogs } from "./help"
 
 const listedLogs: Ref<typeof logList> = ref([])
 const { customConsole } = useConfig().value
 
-const host = toRef(customConsole, "host")
-const ip = toRef(customConsole, "ip")
-const identity = toRef(customConsole, "identity")
+const { autoInject, host, ip, identity } = toRefs(customConsole)
 const isDebug = import.meta.env.DEV
 
 const connect = () => {
@@ -37,24 +39,22 @@ function clearlog() {
     background="#ecf9ff"
     left-icon="info-o"
     :scrollable="false"
-    wrapable
-  >
+    wrapable>
     基于 whistle 中的 logjs，所以需要安装 whistle。
   </NoticeBar>
   <CellGroup inset>
-    <!-- <Field ield name="switch" label="加载时注入,还没有做">
+    <Field ield name="switch" label="加载时注入">
       <template #input>
-        <Switch v-model="checked" size="20" />
+        <Switch v-model="autoInject" size="20" />
       </template>
-    </Field> -->
+    </Field>
     <Field
       v-model="ip"
       center
       maxlength="15"
       clearable
       label="IP"
-      placeholder="请输入IP"
-    ></Field>
+      placeholder="请输入IP"></Field>
     <Field
       v-model="host"
       type="digit"
@@ -62,16 +62,14 @@ function clearlog() {
       center
       clearable
       label="HOST"
-      placeholder="请输入HOST"
-    >
+      placeholder="请输入HOST">
     </Field>
     <Field
       v-model="identity"
       center
       clearable
       label="Identity"
-      placeholder="请输入identity"
-    >
+      placeholder="请输入identity">
       <template #button>
         <Button size="small" type="primary" @click="connect">链接</Button>
       </template>
@@ -92,6 +90,7 @@ function clearlog() {
     }}
   </p>
   <Button @click="showLog">showLog</Button>
+  <Button @click="rewriteConsole">rewriteConsole</Button>
   <Button @click="clearlog">clearlog</Button>
   <template v-if="isDebug">
     <Button @click="addLog">addLog</Button>

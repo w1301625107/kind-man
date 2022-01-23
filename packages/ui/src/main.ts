@@ -1,4 +1,7 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from "vue"
+import App from "./App.vue"
+import { autoInject } from "./autoInject"
 
-createApp(App).mount('#app')
+autoInject()
+
+createApp(App).mount("#app")
