@@ -1,12 +1,5 @@
 <template>
-  <div
-    class="logo"
-    ref="logo"
-    @click="showPopup"
-    @touchstart.stop="handleDown"
-    @touchend.stop="handleUp"
-    @mouseup.stop="handleUp"
-    @mousedown.stop="handleDown">
+  <div class="logo" ref="logo" @click="showPopup" :style="style">
     {{ logoText }}
   </div>
   <Popup
@@ -38,12 +31,14 @@
 
 <script setup lang="ts">
 import { Popup, Tab, Tabs, NoticeBar } from "vant"
-import Console from "./console/index.vue"
 
-import { Ref, ref } from "vue"
-import { useConfig } from "src/use/config"
+import { Ref, ref, watch } from "vue"
 import VueDevtool from "./vueDevtool/index.vue"
 import Wrine from "./wrine/wrine.vue"
+import Console from "./console/index.vue"
+
+import { useConfig } from "src/use/config"
+import { useDrag } from "src/util/useDrag"
 
 const configs = useConfig()
 const { entrance } = configs.value
@@ -53,86 +48,30 @@ const show = ref(false)
 const active = ref(0)
 const logo = ref<HTMLElement>() as Ref<HTMLElement>
 
-let diffLeft = 0
-let diffTop = 0
-let stopClick = false
+const { stopClick, style, right, bottom } = useDrag(logo, {
+  initialValue: {
+    right: entrance.right,
+    bottom: entrance.bottom,
+  },
+})
+watch(right, (v) => {
+  entrance.right = v
+})
+watch(bottom, (v) => {
+  entrance.bottom = v
+})
 
 function showPopup() {
-  if (stopClick) return
+  if (stopClick.value) return
   show.value = true
-}
-
-function handleDown(event: TouchEvent | MouseEvent) {
-  if (event instanceof MouseEvent) {
-    diffLeft = event.x - logo.value.offsetLeft
-    diffTop = event.y - logo.value.offsetTop
-    logo.value.addEventListener("mousemove", handleMove)
-    logo.value.addEventListener("mouseout", handleUp)
-  } else {
-    diffLeft = event.touches[0].clientX - logo.value.offsetLeft
-    diffTop = event.touches[0].clientY - logo.value.offsetTop
-    logo.value.addEventListener("touchmove", handleMove)
-  }
-}
-function handleUp(event: TouchEvent | MouseEvent) {
-  if (event instanceof MouseEvent) {
-    logo.value.removeEventListener("mousemove", handleMove)
-    logo.value.removeEventListener("mouseout", handleUp)
-  } else {
-    logo.value.removeEventListener("touchmove", handleMove)
-  }
-  logo.value.style.cursor = "default"
-  setTimeout(() => {
-    stopClick = false
-  }, 1)
-}
-
-function handleMove(event: TouchEvent | MouseEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  event.stopImmediatePropagation()
-  let offsetLeft: number = 0
-  let offsetTop: number = 0
-
-  if (event instanceof MouseEvent) {
-    stopClick = true
-    logo.value.style.cursor = "grabbing"
-    offsetLeft = event.x
-    offsetTop = event.y
-  } else {
-    offsetLeft = event.touches[0].clientX
-    offsetTop = event.touches[0].clientY
-  }
-
-  offsetLeft = offsetLeft - diffLeft
-  offsetTop = offsetTop - diffTop
-  setPosition(offsetLeft, offsetTop)
-}
-const availHeight = document.documentElement.clientHeight
-const availWidth = document.documentElement.clientWidth
-
-function resetPostion(right: number, bottom: number) {
-  right = Math.max(0, right)
-  right = Math.min(right, availWidth - entrance.width)
-  bottom = Math.max(22, bottom)
-  bottom = Math.min(bottom, availHeight - entrance.height)
-  entrance.right = right
-  entrance.bottom = bottom
-}
-resetPostion(entrance.right, entrance.bottom)
-
-function setPosition(offsetLeft: number, offsetTop: number) {
-  offsetLeft = availWidth - offsetLeft - entrance.width
-  offsetTop = availHeight - offsetTop - entrance.height
-  resetPostion(offsetLeft, offsetTop)
 }
 </script>
 
 <style lang="scss" scoped>
 .logo {
   position: fixed;
-  bottom: calc(v-bind("entrance.bottom") * 1px);
-  right: calc(v-bind("entrance.right") * 1px);
+  // bottom: calc(v-bind("bottom") * 1px);
+  // right: calc(v-bind("right") * 1px);
   height: 30px;
   width: 100px;
   line-height: 30px;
