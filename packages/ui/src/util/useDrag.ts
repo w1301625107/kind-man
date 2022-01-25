@@ -1,52 +1,68 @@
-import { useEventListener } from "@vueuse/core"
-import { computed, onMounted, ref, Ref } from "vue"
+import { useEventListener, MaybeRef, useElementBounding } from "@vueuse/core"
+
+import { clamp, toRefs } from "@vueuse/shared"
+
+import { computed, onMounted, ref, Ref, unref } from "vue"
 import { isMobile } from "."
 
+type Position = {
+  right: number
+  bottom: number
+}
+
 function useDrag(
-  el: Ref<HTMLElement>,
-  option?: {
-    initialValue?: {
-      right: number
-      bottom: number
-    }
-  }
+  el: MaybeRef<HTMLElement>,
+  option: {
+    initialValue?: MaybeRef<Position>
+  } = {}
 ) {
   let diffLeft = 0
   let diffTop = 0
+  let target: HTMLElement
   const stopClick = ref(false)
-  const right = ref(option?.initialValue?.right || 0)
-  const bottom = ref(option?.initialValue?.bottom || 0)
-  const availHeight = document.documentElement.clientHeight
-  const availWidth = document.documentElement.clientWidth
+  const cursor: Ref<"default" | "grabbing"> = ref("default")
+  const position: Ref<Position> = ref(
+    option.initialValue ?? {
+      right: 0,
+      bottom: 0,
+    }
+  )
+  const { width, height } = useElementBounding(el)
+  // const { left, right, top, bottom } = useElementBounding(
+  //   document.documentElement
+  // )
 
-  if (isMobile()) {
-    useEventListener(el, "touchstart", handleDown)
-  } else {
-    useEventListener(el, "pointerdown", handleDown)
-  }
+  const availHeight = ref(document.documentElement.clientHeight)
+  const availWidth = ref(document.documentElement.clientWidth)
+
   onMounted(() => {
-    option?.initialValue &&
-      resetPostion(option?.initialValue.right, option?.initialValue.bottom)
+    target = unref(el)
+    if (isMobile()) {
+      useEventListener(target, "touchstart", handleDown)
+    } else {
+      useEventListener(target, "pointerdown", handleDown)
+    }
+    clampPostion(position.value.right, position.value.bottom)
   })
 
   function setGrabbingCursor() {
-    el.value.style.cursor = "grabbing"
+    cursor.value = "grabbing"
   }
 
   function handleDown(event: TouchEvent | PointerEvent) {
     if (event instanceof PointerEvent) {
-      diffLeft = event.x - el.value.offsetLeft
-      diffTop = event.y - el.value.offsetTop
+      diffLeft = event.x - target.offsetLeft
+      diffTop = event.y - target.offsetTop
       window.addEventListener("pointermove", handleMove)
       window.addEventListener("pointerup", handleUp)
-      el.value.addEventListener("mousemove", setGrabbingCursor, {
+      target.addEventListener("mousemove", setGrabbingCursor, {
         passive: true,
       })
     } else {
-      diffLeft = event.touches[0].clientX - el.value.offsetLeft
-      diffTop = event.touches[0].clientY - el.value.offsetTop
-      el.value.addEventListener("touchmove", handleMove)
-      el.value.addEventListener("touchend", handleUp)
+      diffLeft = event.touches[0].clientX - target.offsetLeft
+      diffTop = event.touches[0].clientY - target.offsetTop
+      target.addEventListener("touchmove", handleMove)
+      target.addEventListener("touchend", handleUp)
     }
   }
 
@@ -54,12 +70,12 @@ function useDrag(
     if (event instanceof PointerEvent) {
       window.removeEventListener("pointermove", handleMove)
       window.removeEventListener("pointerup", handleUp)
-      el.value.removeEventListener("mousemove", setGrabbingCursor)
+      target.removeEventListener("mousemove", setGrabbingCursor)
     } else {
-      el.value.removeEventListener("touchmove", handleMove)
-      el.value.removeEventListener("touchend", handleUp)
+      target.removeEventListener("touchmove", handleMove)
+      target.removeEventListener("touchend", handleUp)
     }
-    el.value.style.cursor = "default"
+    cursor.value = "default"
     setTimeout(() => {
       stopClick.value = false
     }, 1)
@@ -84,26 +100,34 @@ function useDrag(
     setPosition(offsetLeft, offsetTop)
   }
 
-  function resetPostion(offsetRight: number, offsetBottom: number) {
-    offsetRight = Math.max(0, offsetRight)
-    offsetRight = Math.min(offsetRight, availWidth - el.value.clientWidth)
-    offsetBottom = Math.max(0, offsetBottom)
-    offsetBottom = Math.min(offsetBottom, availHeight - el.value.clientHeight)
-    right.value = offsetRight
-    bottom.value = offsetBottom
+  function clampPostion(offsetRight: number, offsetBottom: number) {
+    position.value.right = clamp(offsetRight, 0, availWidth.value - width.value)
+    position.value.bottom = clamp(
+      offsetBottom,
+      0,
+      availHeight.value - height.value
+    )
   }
 
   function setPosition(offsetLeft: number, offsetTop: number) {
-    let offsetRight = availWidth - (offsetLeft + el.value.clientWidth)
-    let offsetBottom = availHeight - (offsetTop + el.value.clientHeight)
-    resetPostion(offsetRight, offsetBottom)
+    let offsetRight = availWidth.value - (offsetLeft + width.value)
+    let offsetBottom = availHeight.value - (offsetTop + height.value)
+    clampPostion(offsetRight, offsetBottom)
   }
 
   return {
+    ...toRefs(position),
+    // top: computed(() => {
+    //   return availHeight.value - position.value.bottom - height.value
+    // }),
+    // left: computed(() => {
+    //   return availWidth.value - position.value.right - width.value
+    // }),
     stopClick,
-    right,
-    bottom,
-    style: computed(() => `bottom:${bottom.value}px;right:${right.value}px;`),
+    style: computed(
+      () =>
+        `bottom:${position.value.bottom}px;right:${position.value.right}px;cursor:${cursor.value}`
+    ),
   }
 }
 
