@@ -2,7 +2,7 @@ import { useEventListener, MaybeRef, useElementBounding } from "@vueuse/core"
 
 import { clamp, toRefs } from "@vueuse/shared"
 
-import { computed, onMounted, ref, Ref, unref } from "vue"
+import { computed, onMounted, ref, Ref, unref, watch } from "vue"
 import { isMobile } from "."
 
 type Position = {
@@ -28,12 +28,23 @@ function useDrag(
     }
   )
   const { width, height } = useElementBounding(el)
-  // const { left, right, top, bottom } = useElementBounding(
-  //   document.documentElement
-  // )
 
   const availHeight = ref(document.documentElement.clientHeight)
   const availWidth = ref(document.documentElement.clientWidth)
+
+  watch(
+    [width, height],
+    () => {
+      clampPostion(position.value.right, position.value.bottom)
+    },
+    {
+      immediate: true,
+    }
+  )
+
+  // const { left, right, top, bottom } = useElementBounding(
+  //   document.documentElement
+  // )
 
   onMounted(() => {
     target = unref(el)
@@ -42,7 +53,6 @@ function useDrag(
     } else {
       useEventListener(target, "pointerdown", handleDown)
     }
-    clampPostion(position.value.right, position.value.bottom)
   })
 
   function setGrabbingCursor() {
@@ -95,8 +105,8 @@ function useDrag(
       offsetTop = event.touches[0].clientY
     }
 
-    offsetLeft = offsetLeft - diffLeft
-    offsetTop = offsetTop - diffTop
+    offsetLeft -= diffLeft
+    offsetTop -= diffTop
     setPosition(offsetLeft, offsetTop)
   }
 

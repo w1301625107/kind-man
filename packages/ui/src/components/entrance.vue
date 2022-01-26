@@ -31,8 +31,8 @@
 
 <script setup lang="ts">
 import { Popup, Tab, Tabs, NoticeBar } from "vant"
-
 import { Ref, ref, watch } from "vue"
+
 import VueDevtool from "./vueDevtool/index.vue"
 import Wrine from "./wrine/wrine.vue"
 import Console from "./console/index.vue"
@@ -48,17 +48,12 @@ const show = ref(false)
 const active = ref(0)
 const logo = ref<HTMLElement>() as Ref<HTMLElement>
 
-const { stopClick, style, right, bottom } = useDrag(logo, {
-  initialValue: {
-    right: entrance.right,
-    bottom: entrance.bottom,
-  },
+const { stopClick, right, bottom, style } = useDrag(logo, {
+  initialValue: entrance,
 })
-watch(right, (v) => {
-  entrance.right = v
-})
-watch(bottom, (v) => {
-  entrance.bottom = v
+watch([right, bottom], (v) => {
+  entrance.right = v[0]
+  entrance.bottom = v[1]
 })
 
 function showPopup() {
