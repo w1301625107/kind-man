@@ -1,11 +1,27 @@
-import { createApp } from "vue"
-import App from "src/components/entrance.vue"
-import { autoInject } from "./autoInject"
+import VueDevtool from "src/components/vueDevtool/index.vue"
+import Wrine from "src/components/wrine/wrine.vue"
+import Console from "src/components/console/index.vue"
+import { createKindMan } from "./create"
 
-autoInject()
+type plugins = Exclude<Parameters<typeof createKindMan>["0"], undefined>
+const base: plugins = [
+  {
+    label: "Console",
+    component: Console,
+  },
+  {
+    label: "Wrine",
+    component: Wrine,
+  },
+  {
+    label: "VueDevtool",
+    component: VueDevtool,
+  },
+]
 
-const kindMan = document.createElement("div")
-kindMan.id = "kindMan"
-document.body.appendChild(kindMan)
+function create(plugins: plugins = []) {
+  const all = [...base, ...plugins]
+  return createKindMan(all)
+}
 
-createApp(App).mount(kindMan)
+export { create }

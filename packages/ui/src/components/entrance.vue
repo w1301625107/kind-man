@@ -15,14 +15,8 @@
         :text="tipText"
         @close="entrance.showTip = false" />
       <Tabs v-model:active="active">
-        <Tab title="console">
-          <Console />
-        </Tab>
-        <Tab title="Vue Devtool">
-          <VueDevtool />
-        </Tab>
-        <Tab title="Wrine">
-          <Wrine />
+        <Tab v-for="c in components" :title="c.label">
+          <component :is="c.component" />
         </Tab>
       </Tabs>
     </div>
@@ -31,14 +25,11 @@
 
 <script setup lang="ts">
 import { Popup, Tab, Tabs, NoticeBar } from "vant"
-import { Ref, ref, watch } from "vue"
-
-import VueDevtool from "./vueDevtool/index.vue"
-import Wrine from "./wrine/wrine.vue"
-import Console from "./console/index.vue"
+import { Ref, ref, watch, getCurrentInstance } from "vue"
 
 import { useConfig } from "src/use/config"
 import { useDrag } from "src/util/useDrag"
+import { KindManPlugin } from "src/types"
 
 const configs = useConfig()
 const { entrance } = configs.value
@@ -60,6 +51,24 @@ function showPopup() {
   if (stopClick.value) return
   show.value = true
 }
+
+const internalInstance = getCurrentInstance()
+
+console.log(
+  "🎆 ~ file: entrance.vue ~ line 67 ~ internalInstance",
+  internalInstance!.appContext.config.globalProperties
+)
+
+const globalProperties = internalInstance!.appContext.config.globalProperties
+
+const components: Array<Pick<KindManPlugin, "component" | "label">> = []
+Object.keys(globalProperties)
+  .filter((key) => {
+    return key.startsWith("$kind_")
+  })
+  .forEach((key) => {
+    components.push(globalProperties[key])
+  })
 </script>
 
 <style lang="scss" scoped>
