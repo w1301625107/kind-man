@@ -25,7 +25,7 @@ const injectCode = (code: string) =>
     }
     var head=document.head||document.getElementsByTagName("head")[0];
     var style=document.createElement("style");
-    style.id="libInjext";
+    style.id="libInjectCss";
     style.type="text/css";
     if(insertAt==="top"){
       if(head.firstChild){
