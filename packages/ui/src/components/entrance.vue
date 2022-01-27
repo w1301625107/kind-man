@@ -15,8 +15,8 @@
         :text="tipText"
         @close="entrance.showTip = false" />
       <Tabs v-model:active="active">
-        <Tab v-for="c in components" :title="c.label">
-          <component :is="c.component" />
+        <Tab v-for="c in components" :title="c">
+          <component :is="c" />
         </Tab>
       </Tabs>
     </div>
@@ -29,7 +29,6 @@ import { Ref, ref, watch, getCurrentInstance } from "vue"
 
 import { useConfig } from "src/use/config"
 import { useDrag } from "src/util/useDrag"
-import { KindManPlugin } from "src/types"
 
 const configs = useConfig()
 const { entrance } = configs.value
@@ -61,14 +60,7 @@ console.log(
 
 const globalProperties = internalInstance!.appContext.config.globalProperties
 
-const components: Array<Pick<KindManPlugin, "component" | "label">> = []
-Object.keys(globalProperties)
-  .filter((key) => {
-    return key.startsWith("$kind_")
-  })
-  .forEach((key) => {
-    components.push(globalProperties[key])
-  })
+const components = globalProperties.$KindManPluginName || []
 </script>
 
 <style lang="scss" scoped>

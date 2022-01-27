@@ -19,10 +19,9 @@ function createKindMan(plugins: Array<UnionPlugin> = []) {
       return [
         {
           install: function (Vue: any, ...option: any) {
-            Vue.config.globalProperties[`$kind_${label}`] = {
-              label,
-              component,
-            }
+            const g = Vue.config.globalProperties
+            g.$KindManPluginName.push(label)
+            Vue.component(label, component)
           },
         },
         ...opiton,
@@ -35,6 +34,9 @@ function createKindMan(plugins: Array<UnionPlugin> = []) {
   document.body.appendChild(kindMan)
 
   const kindManApp = createApp(Entrance)
+
+  kindManApp.config.globalProperties.$KindManPluginName = []
+
   VuePlugins.forEach((plugin) => {
     kindManApp.use(...plugin)
   })

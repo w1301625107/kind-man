@@ -1,11 +1,9 @@
 import Console from "./index.vue"
 const install = {
   install: function (Vue: any) {
-    Vue.config.globalProperties.$kind_TestCi = {
-      label: "TestCi",
-      component: Console,
-    }
-    Vue.component("TestCi", Console)
+    const label = "TestCi"
+    Vue.config.globalProperties.$KindManPluginName.push(label)
+    Vue.component(label, Console)
   },
 }
 
