@@ -1,41 +1,28 @@
 import { useLocalStorage } from "@vueuse/core"
 import deepmerge from "deepmerge"
+import { ref, InjectionKey } from "vue"
 
 const key = "kind-man-config"
 
-let DefaultConfig = {
-  entrance: {
-    width: 100,
-    height: 30,
-    right: 30,
-    bottom: 30,
-    showTip: true,
-  },
-  vueDevtool: {
-    ip: "127.0.0.1",
-    host: "8098",
-  },
-  wrine: {
-    ip: "127.0.0.1",
-    host: "8899",
-    identity: "anonymous",
-  },
-  customConsole: {
-    ip: "127.0.0.1",
-    host: "8899",
-    identity: "anonymous",
-    autoInject: false,
-  },
-}
+const DefaultConfig = {}
 
-type Config = typeof DefaultConfig
+type Config = typeof DefaultConfig & Record<string, any>
 
-function useConfig() {
+function useConfigStorage<T extends object>(customKey: string, defalut?: T) {
   const configs = useLocalStorage<Config>(key, DefaultConfig)
-  // merge old version config and new version config
-  configs.value = deepmerge(DefaultConfig, configs.value)
+  if (!configs.value[customKey]) {
+    configs.value[customKey] = defalut || {}
+  }
+  let cc = configs.value[customKey]
+  if (defalut) {
+    // merge old version config and new version config
+    cc = deepmerge(defalut, cc)
+  }
 
-  return configs
+  return ref(configs.value[customKey] as T)
 }
 
-export { useConfig }
+const InjectKeyUseConfigStorage: InjectionKey<typeof useConfigStorage> =
+  Symbol.for("useConfigStorage")
+
+export { useConfigStorage, InjectKeyUseConfigStorage }

@@ -25,25 +25,39 @@
 
 <script setup lang="ts">
 import { Popup, Tab, Tabs, NoticeBar } from "vant"
-import { Ref, ref, watch, getCurrentInstance } from "vue"
+import { Ref, ref, watch, getCurrentInstance, provide } from "vue"
 
-import { useConfig } from "src/use/config"
+import { useConfigStorage, InjectKeyUseConfigStorage } from "src/use/config"
 import { useDrag } from "src/util/useDrag"
 
-const configs = useConfig()
-const { entrance } = configs.value
+provide(InjectKeyUseConfigStorage, useConfigStorage)
+
 const tipText = "好心人，bug多多，乐趣多多。"
 const logoText = "好心人"
 const show = ref(false)
 const active = ref(0)
 const logo = ref<HTMLElement>() as Ref<HTMLElement>
 
+const defalutConfig = {
+  width: 100,
+  height: 30,
+  right: 30,
+  bottom: 30,
+  showTip: true,
+}
+
+const entrance = useConfigStorage<typeof defalutConfig>(
+  "entrance",
+  defalutConfig
+)
+
 const { stopClick, right, bottom, style } = useDrag(logo, {
   initialValue: entrance,
 })
+
 watch([right, bottom], (v) => {
-  entrance.right = v[0]
-  entrance.bottom = v[1]
+  entrance.value.right = v[0]
+  entrance.value.bottom = v[1]
 })
 
 function showPopup() {
@@ -52,11 +66,6 @@ function showPopup() {
 }
 
 const internalInstance = getCurrentInstance()
-
-console.log(
-  "🎆 ~ file: entrance.vue ~ line 67 ~ internalInstance",
-  internalInstance!.appContext.config.globalProperties
-)
 
 const globalProperties = internalInstance!.appContext.config.globalProperties
 

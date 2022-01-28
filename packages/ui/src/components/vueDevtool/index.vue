@@ -6,15 +6,23 @@
 // ELECTRON_MIRROR=http://npm.taobao.org/mirrors/electron/ npm install electron
 
 // TODO : 自动注入
-import { Cell, Field, CellGroup, Button, NoticeBar, Switch } from "vant"
+import { Field, CellGroup, Button, NoticeBar } from "vant"
 import { useScriptTag } from "@vueuse/core"
-import { ref, toRef, watch } from "vue"
-import { useConfig } from "src/use/config"
+import { inject, ref, toRefs } from "vue"
+import { InjectKeyUseConfigStorage } from "src/use/config"
 import { detect } from "./help"
 
-const { vueDevtool } = useConfig().value
-const host = toRef(vueDevtool, "host")
-const ip = toRef(vueDevtool, "ip")
+const defalutConfig = {
+  ip: "127.0.0.1",
+  host: "8098",
+}
+
+const useConfigStorage = inject(InjectKeyUseConfigStorage)
+const config = useConfigStorage
+  ? useConfigStorage<typeof defalutConfig>("vueDevtools", defalutConfig)
+  : ref(defalutConfig)
+
+const { host, ip } = toRefs(config.value)
 
 const connect = () => {
   detect()
@@ -30,8 +38,7 @@ const connect = () => {
     background="#ecf9ff"
     left-icon="info-o"
     :scrollable="false"
-    wrapable
-  >
+    wrapable>
     基于 vue devtools，需要本地安装 vue-devtools 使用。如果需要支持 Vue
     3，需要安装 beta 版本的 devtools，切记！！
     <!-- 如果需要vuex，需要一开始就注入，vuex才会正常。 -->
@@ -48,8 +55,7 @@ const connect = () => {
       maxlength="15"
       clearable
       label="IP"
-      placeholder="请输入IP"
-    ></Field>
+      placeholder="请输入IP"></Field>
     <Field
       v-model="host"
       type="digit"
@@ -57,8 +63,7 @@ const connect = () => {
       center
       clearable
       label="HOST"
-      placeholder="请输入HOST"
-    >
+      placeholder="请输入HOST">
       <template #button>
         <Button size="small" type="primary" @click="connect">链接</Button>
       </template>

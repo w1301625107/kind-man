@@ -1,14 +1,22 @@
 <script setup lang="ts">
-import { useScriptTag } from "@vueuse/core"
-import { useConfig } from "src/use/config"
 import { Cell, Field, CellGroup, Button, NoticeBar } from "vant"
-import { toRef } from "vue"
+import { ref, toRefs, inject } from "vue"
 
-let { wrine } = useConfig().value
+import { InjectKeyUseConfigStorage } from "src/use/config"
 
-const host = toRef(wrine, "host")
-const ip = toRef(wrine, "ip")
-const identity = toRef(wrine, "identity")
+const defalutConfig = {
+  ip: "127.0.0.1",
+  host: "8899",
+  identity: "anonymous",
+}
+
+const useConfigStorage = inject(InjectKeyUseConfigStorage)
+const config = useConfigStorage
+  ? useConfigStorage<typeof defalutConfig>("wrine", defalutConfig)
+  : ref(defalutConfig)
+
+const { host, ip, identity } = toRefs(config.value)
+
 const connect = () => {
   const ipandhost = `http://${ip.value}:${host.value}`
   if (typeof window === "undefined" || window.WeinreServerURL) {
@@ -45,8 +53,7 @@ const connect = () => {
       maxlength="15"
       clearable
       label="IP"
-      placeholder="请输入IP"
-    >
+      placeholder="请输入IP">
     </Field>
     <Field
       v-model="host"
@@ -55,16 +62,14 @@ const connect = () => {
       center
       clearable
       label="HOST"
-      placeholder="请输入HOST"
-    >
+      placeholder="请输入HOST">
     </Field>
     <Field
       v-model="identity"
       center
       clearable
       label="Identity"
-      placeholder="请输入identity"
-    >
+      placeholder="请输入identity">
       <template #button>
         <Button size="small" type="primary" @click="connect">链接</Button>
       </template>
