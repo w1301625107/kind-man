@@ -1,7 +1,7 @@
 import { createApp } from "vue"
 
 import Entrance from "src/components/entrance.vue"
-import { autoInject } from "./autoInject"
+import { beforeCreate } from "./hooks"
 import { KindManPlugin } from "./types"
 
 type VuePlugin = Parameters<ReturnType<typeof createApp>["use"]>
@@ -9,11 +9,11 @@ type VuePlugin = Parameters<ReturnType<typeof createApp>["use"]>
 type UnionPlugin = KindManPlugin | VuePlugin
 
 function createKindMan(plugins: Array<UnionPlugin> = []) {
-  autoInject()
   const VuePlugins: Array<VuePlugin> = plugins.map((p) => {
     if (Array.isArray(p)) {
       return p
     } else {
+      beforeCreate(p)
       const { label, component, opiton = [] } = p
 
       return [
