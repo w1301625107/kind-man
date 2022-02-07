@@ -3,23 +3,14 @@ import {
   consoleKey,
   logList,
   rewriteConsole,
-} from "src/components/console/overwrite"
+  useConfig,
+} from "src/components/console/help"
 import { InjectKeyUseConfigStorage } from "src/use/config"
 import { Button, Icon, CellGroup, NoticeBar, Field, Switch } from "vant"
 import { inject, ref, Ref, toRefs } from "vue"
-import { whistleRemoteLogs } from "./help"
+import { whistleRemoteLogs } from "./remoteLog"
 
-const defalutConfig = {
-  ip: "127.0.0.1",
-  host: "8899",
-  identity: "anonymous",
-  autoInject: false,
-}
-
-const useConfigStorage = inject(InjectKeyUseConfigStorage)
-const config = useConfigStorage
-  ? useConfigStorage<typeof defalutConfig>("customConsole", defalutConfig)
-  : ref(defalutConfig)
+const { config } = useConfig(inject(InjectKeyUseConfigStorage))
 
 const listedLogs: Ref<typeof logList> = ref([])
 
