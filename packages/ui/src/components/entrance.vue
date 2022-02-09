@@ -77,8 +77,8 @@ const components = globalProperties.$KindManPluginName || []
   position: fixed;
   // bottom: calc(v-bind("bottom") * 1px);
   // right: calc(v-bind("right") * 1px);
-  height: 30px;
-  width: 100px;
+  height: calc(v-bind("entrance.height") * 1px);
+  width: calc(v-bind("entrance.width") * 1px);
   line-height: 30px;
   font-weight: bold;
   color: white;
@@ -86,6 +86,7 @@ const components = globalProperties.$KindManPluginName || []
   background-color: #2188ff;
   border-radius: 5px;
   user-select: none;
+  box-shadow: 0 0 10px rgb(0 0 0 / 40%);
 }
 .contain {
   padding-bottom: 40px;
