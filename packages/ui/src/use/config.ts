@@ -13,10 +13,9 @@ function useConfigStorage<T extends object>(customKey: string, defalut?: T) {
   if (!configs.value[customKey]) {
     configs.value[customKey] = defalut || {}
   }
-  let cc = configs.value[customKey]
   if (defalut) {
     // merge old version config and new version config
-    cc = deepmerge(defalut, cc)
+    configs.value[customKey] = deepmerge(defalut, configs.value[customKey])
   }
 
   return ref(configs.value[customKey] as T)
