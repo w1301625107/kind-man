@@ -35,6 +35,7 @@ function useConfig(useStorage?: typeof useConfigStorage) {
     host: "8899",
     identity: "anonymous",
     autoInject: false,
+    vConsole: false,
   }
 
   const u = useStorage
@@ -47,11 +48,26 @@ function useConfig(useStorage?: typeof useConfigStorage) {
 
 function beforeInit(option: { useConfigStorage: typeof useConfigStorage }) {
   const { config } = useConfig(option.useConfigStorage)
-  const { autoInject, ip, host, identity } = config.value
+  const { autoInject, ip, host, identity, vConsole } = config.value
 
   if (autoInject) {
     rewriteConsole()
     whistleRemoteLogs(ip, host, identity)
+  }
+  if (vConsole) {
+    addVConsole()
+  }
+}
+
+function addVConsole() {
+  let script = document.createElement("script")
+  script.charset = "utf8"
+  script.async = false
+  script.src = "https://unpkg.com/vconsole@latest/dist/vconsole.min.js"
+  document.head.appendChild(script)
+  script.onload = function () {
+    //@ts-ignore
+    window.vConsole = new window.VConsole()
   }
 }
 

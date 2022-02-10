@@ -14,7 +14,7 @@ const { config } = useConfig(inject(InjectKeyUseConfigStorage))
 
 const listedLogs: Ref<typeof logList> = ref([])
 
-const { autoInject, host, ip, identity } = toRefs(config.value)
+const { autoInject, host, ip, identity, vConsole } = toRefs(config.value)
 const isDebug = import.meta.env.DEV
 
 const connect = () => {
@@ -45,7 +45,12 @@ function clearlog() {
     基于 whistle 中的 logjs，所以需要安装 whistle。
   </NoticeBar>
   <CellGroup inset>
-    <Field ield name="switch" label="加载时注入">
+    <Field name="switch" label="VConsole,打开后需刷新">
+      <template #input>
+        <Switch v-model="vConsole" size="20" />
+      </template>
+    </Field>
+    <Field name="switch" label="加载时注入">
       <template #input>
         <Switch v-model="autoInject" size="20" />
       </template>
