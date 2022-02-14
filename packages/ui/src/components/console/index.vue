@@ -4,10 +4,12 @@ import {
   logList,
   rewriteConsole,
   useConfig,
+  addVConsole,
+  removeVconsole,
 } from "src/components/console/help"
 import { InjectKeyUseConfigStorage } from "src/use/config"
 import { Button, Icon, CellGroup, NoticeBar, Field, Switch } from "vant"
-import { inject, ref, Ref, toRefs } from "vue"
+import { inject, ref, Ref, toRefs, watch } from "vue"
 import { whistleRemoteLogs } from "./remoteLog"
 
 const { config } = useConfig(inject(InjectKeyUseConfigStorage))
@@ -33,6 +35,14 @@ function addLog(type: consoleKey = "log") {
 function clearlog() {
   listedLogs.value.length = 0
 }
+
+watch(vConsole, (v) => {
+  if (v) {
+    addVConsole()
+  } else {
+    removeVconsole()
+  }
+})
 </script>
 
 <template>
@@ -45,7 +55,7 @@ function clearlog() {
     基于 whistle 中的 logjs，所以需要安装 whistle。
   </NoticeBar>
   <CellGroup inset>
-    <Field name="switch" label="VConsole,打开后需刷新">
+    <Field name="switch" label="VConsole">
       <template #input>
         <Switch v-model="vConsole" size="20" />
       </template>

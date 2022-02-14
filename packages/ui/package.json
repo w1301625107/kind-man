@@ -11,6 +11,7 @@
     "deepmerge": "^4.2.2",
     "socket.io-client": "^2.3.0",
     "vant": "^3.4.1",
+    "vconsole": "^3.11.2",
     "vue": "^3.2.25"
   },
   "devDependencies": {

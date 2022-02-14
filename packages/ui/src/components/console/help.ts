@@ -1,6 +1,7 @@
 import { useConfigStorage } from "src/use/config"
 import { ref } from "vue"
 import { whistleRemoteLogs } from "./remoteLog"
+import VConsole from "vconsole"
 
 // TODO : 修改定义
 const keys = ["log", "warn", "error", "debug"] as const
@@ -60,15 +61,21 @@ function beforeInit(option: { useConfigStorage: typeof useConfigStorage }) {
 }
 
 function addVConsole() {
-  let script = document.createElement("script")
-  script.charset = "utf8"
-  script.async = false
-  script.src = "https://unpkg.com/vconsole@latest/dist/vconsole.min.js"
-  document.head.appendChild(script)
-  script.onload = function () {
-    //@ts-ignore
-    window.vConsole = new window.VConsole()
-  }
+  //@ts-ignore
+  window.vConsole = new VConsole()
 }
 
-export { logList, consoleKey, rewriteConsole, useConfig, beforeInit }
+function removeVconsole() {
+  //@ts-ignore
+  window.vConsole.destroy()
+}
+
+export {
+  logList,
+  consoleKey,
+  rewriteConsole,
+  useConfig,
+  beforeInit,
+  addVConsole,
+  removeVconsole,
+}
